@@ -228,7 +228,7 @@ begin
         neg <= '0';
         end if;
         if(ULA_OP = "000") then --SOMA
-            ula_out <= bus_a + bus_b;
+            ula_out <= bus_b + bus_c;
             if (bus_b(15) = '0' AND bus_c(15) = '0') AND ula_out(15) = '1' then
                 sig_overflow <= '1'; 
             elsif (bus_b(15) = '1' AND bus_c(15) = '1') AND ula_out(15) = '0' then
@@ -252,9 +252,9 @@ begin
             overflow <= '1'; 
             end if;
         elsif(ULA_OP = "010") then --AND   
-            ula_out <= bus_a AND bus_b;
+            ula_out <= bus_b AND bus_c;
         else -- OR
-            ula_out <= bus_a OR bus_b;      -- AQUI PODE SER POSTO MAIS OPERAÇÕES PARA A ULA
+            ula_out <= bus_b OR bus_c;      -- AQUI PODE SER POSTO MAIS OPERAÇÕES PARA A ULA
         end if;
     end process ULA;
 
