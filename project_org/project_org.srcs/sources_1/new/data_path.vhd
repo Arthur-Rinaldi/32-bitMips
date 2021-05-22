@@ -71,9 +71,7 @@ signal reg13               : std_logic_vector (15 downto 0);
 signal reg14               : std_logic_vector (15 downto 0);
 signal reg15               : std_logic_vector (15 downto 0);
 
--- Sinais da ULA
-signal a_operand    : STD_LOGIC_VECTOR (15 downto 0);      
-signal b_operand    : STD_LOGIC_VECTOR (15 downto 0);   
+-- Sinais da ULA  
 signal ula_out      : STD_LOGIC_VECTOR (16 downto 0);
 
 -- Sinais do banc de registradores
@@ -214,6 +212,51 @@ begin
     reg13 when REG_B = "1101" else
     reg14 when REG_B = "1110" else
     reg15;
+
+    ULA : process(bus_b, bus_c, ULA_OP)
+        begin
+        overflow <= '0';
+        sig_overflow <= '0';
+        if  (ula_out = "0000000000000000") then
+        zero <= '1';
+        else
+        zero <= '0';
+        end if;
+        if  (ula_out(15) = '1') then
+        neg <= '1';
+        else
+        neg <= '0';
+        end if;
+        if(ULA_OP = "000") then --SOMA
+            ula_out <= bus_a + bus_b;
+            if (bus_b(15) = '0' AND bus_c(15) = '0') AND ula_out(15) = '1' then
+                sig_overflow <= '1'; 
+            elsif (bus_b(15) = '1' AND bus_c(15) = '1') AND ula_out(15) = '0' then
+                sig_overflow <= '1';
+            elsif (bus_b(15) = '0' AND bus_c(15) = '1') AND (bus_b >= (NOT bus_c) - "1") then
+               overflow <= '1';
+            elsif (bus_b(15) = '1' AND bus_c(15) = '0') AND ((NOT bus_b) - "1" <= bus_c) then
+               overflow <= '1';
+            elsif (bus_b(15)='1' and bus_c(15)='1') then
+               overflow <= '1';
+            end if;
+        elsif(ULA_OP = "001") then -- SUB
+            ula_out <= bus_b - bus_c;
+            if(bus_b(15) = '0' AND bus_c(15) = '1') AND ula_out(15) = '1' then 
+            sig_overflow <= '1';     
+            elsif (bus_b(15) = '1' AND bus_c(15) = '0') AND ula_out(15) = '0' then
+            sig_overflow <= '1';    
+            elsif (bus_b(15) = '1' and bus_c(15) = '1') and ((not bus_b) - "1" <= (not bus_c)-1) then
+            overflow <= '1';
+            elsif (bus_b(15)='1' and bus_c(15)='0') then
+            overflow <= '1'; 
+            end if;
+        elsif(ULA_OP = "010") then --AND   
+            ula_out <= bus_a AND bus_b;
+        else -- OR
+            ula_out <= bus_a OR bus_b;      -- AQUI PODE SER POSTO MAIS OPERAÇÕES PARA A ULA
+        end if;
+    end process ULA;
 
 
 end rtl;
