@@ -23,7 +23,7 @@ entity data_path is
     -- Multiplexadores
     load_mux            : in  std_logic;
     adress_mux          : in  std_logic;
-    jmp_mux             : in  std_logic;
+    new_pc_sel          : in  std_logic;    -- Seletor da entrada de PC, desvio ou soma um
     branch_mux          : in  std_logic;
     -- Saidas do datapath
     decoded_inst        : out std_logic_vector (6 downto 0);   -- O sinal da instrução que vai para a maquina de estados
@@ -47,8 +47,9 @@ signal pc_in                : std_logic_vector (8  downto 0);   -- Entrada do PC
 
 -- Sinais que saem do decoder
 signal ULA_OP               : std_logic_vector (2  downto 0);   -- Seta a operação da ula
-signal jp_adress            : std_logic_vector (8  downto 0);   -- 
-signal brach_adress         : std_logic_vector (8  downto 0);   --
+signal adress               : std_logic_vector (8  downto 0);   -- Endereço de jump, load e store
+signal branch_adress        : std_logic_vector (8  downto 0);   -- Endereço de Branch
+signal pc_desvio            : std_logic_vector (8  downto 0);   -- Escolhe entre branch e jump
 signal REG_A                : std_logic_vector (3  downto 0);   -- 
 signal REG_B                : std_logic_vector (3  downto 0);   --
 signal REG_DEST             : std_logic_vector (3  downto 0);   -- Seta o registrador destino
@@ -76,6 +77,7 @@ signal ula_out      : STD_LOGIC_VECTOR (16 downto 0);
 
 -- Sinais do banc de registradores
 signal bus_a        : STD_LOGIC_VECTOR (15 downto 0);
+signal bus_a_in        : STD_LOGIC_VECTOR (15 downto 0);
 signal bus_b        : STD_LOGIC_VECTOR (15 downto 0);
 signal bus_c        : STD_LOGIC_VECTOR (15 downto 0);
 
@@ -119,22 +121,22 @@ begin
      if (rising_edge(clk)) then
             if (write_reg_en = '1') then
                 case REG_DEST is
-                     when "0000" => reg0  <= bus_a;
-                     when "0001" => reg1  <= bus_a;
-                     when "0010" => reg2  <= bus_a;
-                     when "0011" => reg3  <= bus_a;
-                     when "0100" => reg4  <= bus_a;
-                     when "0101" => reg5  <= bus_a;
-                     when "0110" => reg6  <= bus_a;
-                     when "0111" => reg7  <= bus_a;
-                     when "1000" => reg8  <= bus_a;
-                     when "1001" => reg9  <= bus_a;
-                     when "1010" => reg10 <= bus_a;
-                     when "1011" => reg11 <= bus_a;
-                     when "1100" => reg12 <= bus_a;
-                     when "1101" => reg13 <= bus_a;
-                     when "1110" => reg14 <= bus_a;
-                     when others => reg15 <= bus_a;
+                     when "0000" => reg0  <= bus_a_in;
+                     when "0001" => reg1  <= bus_a_in;
+                     when "0010" => reg2  <= bus_a_in;
+                     when "0011" => reg3  <= bus_a_in;
+                     when "0100" => reg4  <= bus_a_in;
+                     when "0101" => reg5  <= bus_a_in;
+                     when "0110" => reg6  <= bus_a_in;
+                     when "0111" => reg7  <= bus_a_in;
+                     when "1000" => reg8  <= bus_a_in;
+                     when "1001" => reg9  <= bus_a_in;
+                     when "1010" => reg10 <= bus_a_in;
+                     when "1011" => reg11 <= bus_a_in;
+                     when "1100" => reg12 <= bus_a_in;
+                     when "1101" => reg13 <= bus_a_in;
+                     when "1110" => reg14 <= bus_a_in;
+                     when others => reg15 <= bus_a_in;
                  end case;   
             else
                 if (rst_n = '0') then
@@ -258,5 +260,42 @@ begin
         end if;
     end process ULA;
 
+    MUX_LOAD : process (load_mux,data_in,ula_out) --Multiplexador da função LOAD
+    begin
+    if (load_mux = '1') then
+        bus_a_in <= data_in; 
+    else
+        bus_a_in <= ula_out;
+    end if;
+    end process MUX_LOAD;
+    
+    MUX_MEM_ADRESS : process (adress_mux,pc_out,adress) --Multiplexador do endereço de memoria
+    begin
+    if (adress_mux = '1') then
+        adress_pc <= adress; -- Recebe o endereço escrito na instrução
+    else
+        adress_pc <= pc_out; -- Recebe o valor de PC
+    end if;
+    end process MUX_MEM_ADRESS;
+    
+    MUX_JUMP_BRANCH : process (branch_mux,branch_adress,adress) --Multiplexador do endereço de memoria
+    begin
+    if (adress_mux = '1') then
+        pc_desvio <= adress; -- saida do mux com valor do jump
+    else
+        pc_desvio <= branch_adress; -- Saida do mux com valor do branch
+    end if;
+    end process MUX_JUMP_BRANCH;
+    
+    PC_ADD : process (pc_desvio,pc_out,new_pc_sel ) --Multiplexador da entrada do pc
+    begin
+    if (new_pc_sel = '1') then     -- Nesse caso ocorre o desvio
+        pc_in <= pc_desvio;
+    else
+        pc_in <= pc_out + 1; -- Não ocorre desvio
+    end if;
+    end process PC_ADD;
+    
+    
 
 end rtl;
