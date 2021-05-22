@@ -49,10 +49,11 @@ signal pc_in                : std_logic_vector (8  downto 0);   -- Entrada do PC
 signal ULA_OP               : std_logic_vector (2  downto 0);   -- Seta a operação da ula
 signal adress               : std_logic_vector (8  downto 0);   -- Endereço de jump, load e store
 signal branch_adress        : std_logic_vector (8  downto 0);   -- Endereço de Branch
-signal pc_desvio            : std_logic_vector (8  downto 0);   -- Escolhe entre branch e jump
 signal REG_A                : std_logic_vector (3  downto 0);   -- 
 signal REG_B                : std_logic_vector (3  downto 0);   --
 signal REG_DEST             : std_logic_vector (3  downto 0);   -- Seta o registrador destino
+--Sai do multiplexador
+signal pc_desvio            : std_logic_vector (8  downto 0);   -- Escolhe entre branch e jump
     
 -- Registradores
 signal reg0                : std_logic_vector (15 downto 0);
@@ -296,6 +297,16 @@ begin
     end if;
     end process PC_ADD;
     
-    
-
+    DECODER : process (instruction)
+    begin
+        REG_A         <= instruction(7 downto 4);
+        REG_B         <= instruction(3 downto 0);
+        REG_DEST      <= instruction(11 downto 8);
+        ULA_OP        <= instruction(14 downto 12);
+        adress        <= instruction(8 downto 0);
+        branch_adress(7 downto 0) <= instruction(7 downto 0);
+        branch_adress(8 downto 8) <= instruction(12 downto 12);
+        decoded_inst  <= instruction(15 downto 9);
+    end process DECODER;
+  
 end rtl;
