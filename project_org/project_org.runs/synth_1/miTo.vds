@@ -1,0 +1,35 @@
+#-----------------------------------------------------------
+# Vivado v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# IP Build 2404404 on Fri Dec  7 01:43:56 MST 2018
+# Start of session at: Sat May 22 15:46:42 2021
+# Process ID: 7284
+# Current directory: C:/Users/USER/Documents/GitHub/32-bitMips/project_org/project_org.runs/synth_1
+# Command line: vivado.exe -log miTo.vds -product Vivado -mode batch -messageDb vivado.pb -notrace -source miTo.tcl
+# Log file: C:/Users/USER/Documents/GitHub/32-bitMips/project_org/project_org.runs/synth_1/miTo.vds
+# Journal file: C:/Users/USER/Documents/GitHub/32-bitMips/project_org/project_org.runs/synth_1\vivado.jou
+#-----------------------------------------------------------
+source miTo.tcl -notrace
+Command: synth_design -top miTo -part xc7k70tfbv676-1
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7k70t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7k70t'
+INFO: Launching helper process for spawning children vivado processes
+INFO: Helper process launched with PID 10792 
+---------------------------------------------------------------------------------
+Starting Synthesize : Time (s): cpu = 00:00:02 ; elapsed = 00:00:03 . Memory (MB): peak = 443.875 ; gain = 97.945
+---------------------------------------------------------------------------------
+ERROR: [Synth 8-2715] syntax error near end [C:/Users/USER/Documents/GitHub/32-bitMips/project_org/project_org.srcs/sources_1/new/mito_pkg.vhd:73]
+ERROR: [Synth 8-989] clk is already declared in this region [C:/Users/USER/Documents/GitHub/32-bitMips/project_org/project_org.srcs/sources_1/new/mito_pkg.vhd:78]
+ERROR: [Synth 8-989] saida_memoria is already declared in this region [C:/Users/USER/Documents/GitHub/32-bitMips/project_org/project_org.srcs/sources_1/new/mito_pkg.vhd:80]
+ERROR: [Synth 8-989] entrada_memoria is already declared in this region [C:/Users/USER/Documents/GitHub/32-bitMips/project_org/project_org.srcs/sources_1/new/mito_pkg.vhd:81]
+INFO: [Synth 8-2810] unit mito_pkg ignored due to previous errors [C:/Users/USER/Documents/GitHub/32-bitMips/project_org/project_org.srcs/sources_1/new/mito_pkg.vhd:13]
+---------------------------------------------------------------------------------
+Finished Synthesize : Time (s): cpu = 00:00:03 ; elapsed = 00:00:04 . Memory (MB): peak = 498.082 ; gain = 152.152
+---------------------------------------------------------------------------------
+synthesize failed
+INFO: [Common 17-83] Releasing license: Synthesis
+3 Infos, 0 Warnings, 0 Critical Warnings and 5 Errors encountered.
+synth_design failed
+ERROR: [Common 17-69] Command failed: Vivado Synthesis failed
+INFO: [Common 17-206] Exiting Vivado at Sat May 22 15:46:51 2021...
