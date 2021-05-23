@@ -20,8 +20,8 @@ architecture Behavioral of testebench is
     port (
          signal clk             : in  std_logic :='0';
          signal rst_n           : in  std_logic :='0';
-         signal saida_memoria   : in  std_logic_vector (31 downto 0);
-         signal entrada_memoria : out std_logic_vector (31 downto 0)         
+         signal data_in         : in  std_logic_vector (15 downto 0);
+         signal data_out        : out std_logic_vector (15 downto 0)         
     ); 
     
     end component;   
@@ -29,8 +29,8 @@ architecture Behavioral of testebench is
         -- control signals
         signal clk_s            : std_logic :='0';
         signal reset_s          : std_logic;
-        signal saida_memoria_s  : std_logic_vector (31 downto 0);
-        signal entrada_memoria_s: std_logic_vector (31 downto 0);
+        signal data_in_s        : std_logic_vector (15 downto 0);
+        signal data_out_s       : std_logic_vector (15 downto 0);
         
     begin
     
@@ -38,8 +38,8 @@ architecture Behavioral of testebench is
       port map(
         clk                 => clk_s,
         rst_n               => reset_s,   
-        saida_memoria       => saida_memoria_s,
-        entrada_memoria     => entrada_memoria_s
+        data_in             => data_in_s,
+        data_out            => data_out_s
       );
 
     -- clock generator - 100MHZ

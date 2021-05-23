@@ -266,7 +266,7 @@ begin
     if (load_mux = '1') then
         bus_a_in <= data_in; 
     else
-        bus_a_in <= ula_out;
+        bus_a_in <= ula_out(15 downto 0);
     end if;
     end process MUX_LOAD;
     
