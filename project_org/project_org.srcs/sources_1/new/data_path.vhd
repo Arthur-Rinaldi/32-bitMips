@@ -26,7 +26,7 @@ entity data_path is
     new_pc_sel          : in  std_logic;    -- Seletor da entrada de PC, desvio ou soma um
     branch_mux          : in  std_logic;
     -- Saidas do datapath
-    decoded_inst        : out std_logic_vector (6 downto 0);   -- O sinal da instrução que vai para a maquina de estados
+    decoded_inst        : out decoded_instruction_type;   -- O sinal da instrução que vai para a maquina de estados
     flag_zero           : out std_logic;
     flag_neg            : out std_logic;
     flag_overflow       : out std_logic;
@@ -306,7 +306,42 @@ begin
         adress        <= instruction(8 downto 0);
         branch_adress(7 downto 0) <= instruction(7 downto 0);
         branch_adress(8 downto 8) <= instruction(12 downto 12);
-        decoded_inst  <= instruction(15 downto 9);
+        if instruction(15 downto 15) = "1" then                 -- Operação de ULA
+            case instruction(14 downto 12) is
+            when "000"=>
+                decoded_inst <= I_ADD;
+            when  others=> 
+                decoded_inst <= I_NOP;
+            end case;
+         else
+            if instruction(14 downto 14) = "1" then             -- Operação de memoria
+                if instruction(13 downto 13) = "0" then --LOAD
+                    decoded_inst <= I_LOAD;
+                else
+                    decoded_inst <= I_STORE;
+                end if;
+            else                                                -- Instuções de desvio
+                case instruction(13 downto 12) is
+                when "00"=>
+                    decoded_inst <= I_NOP;
+                when "01"=>
+                    case instruction(11 downto 9) is
+                        when "000"=>                    --Branch forçado
+                            decoded_inst <= I_BRANCH;
+                        when "001"=>                    -- Branch zero
+                            decoded_inst <= I_BZERO;
+                        when "010"=>                    -- Branch negado
+                            decoded_inst <= I_BNE;
+                        when others =>                  -- Aqui pode ser adicionado novos tipos de branch
+                        decoded_inst <= I_BRANCH;
+                    end case;
+                when "10"=>
+                    decoded_inst <= I_JMP;
+                when  others=> 
+                    decoded_inst <= I_HALT;
+                end case;
+            end if;
+         end if; 
     end process DECODER;
   
 end rtl;
