@@ -557,7 +557,7 @@ begin
 				saida_memoria(15 downto 0) <= mem(to_integer(unsigned(endereco_memoria)));
 		-- write in memory		
 		elsif ((escrita = '1')) then 		
-			mem(to_integer(unsigned(endereco_memoria+1))) <= entrada_memoria(15 downto 0);
+			mem(to_integer(unsigned(endereco_memoria))) <= entrada_memoria(15 downto 0);
 		end if;
 	end if;		
 
