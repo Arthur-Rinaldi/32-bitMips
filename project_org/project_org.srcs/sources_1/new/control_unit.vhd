@@ -39,7 +39,7 @@ end control_unit;
 
 architecture rtl of control_unit is
 
-        type state_type is (FETCH,DECODE,NEXT1,ULA_1,ULA_2,STORE,LOAD,BRANCH,JUMP,HALT);
+        type state_type is (FETCH,DECODE,NEXT1,ULA_1,ULA_2,STORE,LOAD,BRANCH,BZERO,BNEG,JUMP,NOP,HALT);
         signal state : state_type;
         
 begin
@@ -63,13 +63,58 @@ begin
             when FETCH=>
                 state <= DECODE;
             when DECODE=> 
+                if decoded_inst = I_LOAD then
+                    state <= LOAD;
+                elsif decoded_inst = I_STORE then
+                    state <= STORE;
+                elsif decoded_inst = I_ADD then
+                    state <= ULA_1;
+                elsif decoded_inst = I_SUB then
+                    state <= ULA_1;
+                elsif decoded_inst = I_AND then
+                    state <= ULA_1;
+                elsif decoded_inst = I_OR then
+                    state <= ULA_1;
+                elsif decoded_inst = I_BRANCH then
+                    state <= BRANCH;
+                elsif decoded_inst = I_BZERO then
+                    state <= BZERO;
+                elsif decoded_inst = I_BNE then
+                    state <= BNEG;    
+                elsif decoded_inst = I_JMP then
+                    state <= JUMP;
+                elsif decoded_inst = I_NOP then
+                    state <= NOP;
+                else -- HALT
+                    state <= HALT;
+                end if; 
+            when LOAD=>
             
-        when others=>
-                    halt <= '1';     
+            when STORE=>
+               
+            when ULA_1=>
+            
+            when ULA_2=>
+            
+            when JUMP =>
+
+            when BRANCH=>
+
+            when BZERO=>
+
+            when BNEG=>
+            
+            when NEXT1=>
+            
+            when NOP=>
+            
+            when HALT=>
+            
+            when others=>
+                 state <= HALT;     
            end case;
-           DECODE,NEXT1,ULA_1,ULA_2,STORE,LOAD,BRANCH,JUMP,HALT
-           
      end if;
+
 
 end process;
 

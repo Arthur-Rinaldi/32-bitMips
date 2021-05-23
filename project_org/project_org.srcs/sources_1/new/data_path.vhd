@@ -310,6 +310,12 @@ begin
             case instruction(14 downto 12) is
             when "000"=>
                 decoded_inst <= I_ADD;
+            when "001"=>
+                decoded_inst <= I_SUB;
+            when "010"=>
+                decoded_inst <= I_AND;
+            when "011"=>
+                decoded_inst <= I_OR;
             when  others=> 
                 decoded_inst <= I_NOP;
             end case;
