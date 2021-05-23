@@ -13,33 +13,31 @@ entity miTo is
   Port (
       rst_n                  : in  std_logic;
       clk                    : in  std_logic;
-      saida_memoria          : in  std_logic_vector (31 downto 0);   -- in data read from memory
-      entrada_memoria        : out std_logic_vector (31 downto 0);   -- out_reg or alu_out to memory 
-      write_mem_en           : out std_logic
+      data_in                : in  std_logic_vector (15 downto 0);
+      data_out               : out std_logic_vector (15 downto 0);
+      escrita                : out std_logic
    );
 end miTo;
 
 architecture rtl of miTo is
 
-signal decoded_instruction_s    : decoded_instruction_type;
-signal flag_z_s                 : std_logic;
-signal flag_n_s                 : std_logic;
-signal adress_cel_s             : std_logic;
-signal alu_b_ind_s              : std_logic;
-signal pc_en_s                  : std_logic;
-signal ir_en_s                  : std_logic;
-signal data_en_s                : std_logic;
-signal write_reg_en_s           : std_logic;
-signal jmp_sel_s                : std_logic;
-signal alu_mem_sel_s            : std_logic;
-signal write_mem_en_s           : std_logic;
-signal read_mem_en_s            : std_logic;
-signal alu_op_s                 : std_logic_vector (5  downto 0);
-signal saida_memoria_s          : std_logic_vector (31 downto 0);
-signal entrada_memoria_s        : std_logic_vector (31 downto 0);
+signal decoded_inst_s           : decoded_instruction_type;
+signal flag_zero_s              : std_logic;
+signal flag_neg_s               : std_logic;
+signal flag_overflow_s          : std_logic;
+signal flag_sig_overflow_s      : std_logic;
+signal data_in_s                : std_logic_vector (15 downto 0);
+signal data_out_s               : std_logic_vector (15 downto 0);
 signal adress_pc_s              : std_logic_vector (8  downto 0);
-signal mem_write_sel_s          : std_logic;
-signal alu_a_ind_s              : std_logic;
+signal ir_enable_s              : std_logic;
+signal pc_enable_s              : std_logic;
+signal load_mux_s               : std_logic;
+signal adress_mux_s             : std_logic;
+signal new_pc_sel_s             : std_logic;
+signal branch_mux_s             : std_logic;
+signal flags_enable_s           : std_logic;
+signal write_reg_en_s           : std_logic;
+signal escrita_s                : std_logic;
 
 begin
 
@@ -47,54 +45,52 @@ control_unit_i : control_unit
     port map( 
     clk                 => clk,
     rst_n               => rst_n,
-    adress_sel          => adress_cel_s,
-    alu_b_ind           => alu_b_ind_s,
-    pc_en               => pc_en_s,
-    ir_en               => ir_en_s,
-    data_en             => data_en_s,
+    decoded_inst        => decoded_inst_s,      
+    flag_zero           => flag_zero_s,         
+    flag_neg            => flag_neg_s,          
+    flag_overflow       => flag_overflow_s,     
+    flag_sig_overflow   => flag_sig_overflow_s,                  
+    ir_enable           => ir_enable_s,
+    pc_enable           => pc_enable_s,         
+    load_mux            => load_mux_s,         
+    adress_mux          => adress_mux_s,        
+    new_pc_sel          => new_pc_sel_s,        
+    branch_mux          => branch_mux_s,        
+    flags_enable        => flags_enable_s,      
     write_reg_en        => write_reg_en_s,
-    decoded_inst        => decoded_instruction_s,
-    jmp_sel             => jmp_sel_s,
-    alu_mem_sel         => alu_mem_sel_s,
-    write_mem_en        => write_mem_en_s,
-    alu_op              => alu_op_s,
-    flag_z              => flag_z_s,
-    mem_write_sel       => mem_write_sel_s,
-    alu_a_ind           => alu_a_ind_s,
-    flag_n              => flag_n_s
+    escrita             => escrita_s  
     );
 
 data_path_i : data_path
   port map (
-    clk                 => clk,
-    rst_n               => rst_n,
-    adress_sel          => adress_cel_s,
-    adress_pc           => adress_pc_s,
-    jmp_sel             => jmp_sel_s,
-    alu_mem_sel         => alu_mem_sel_s,
-    alu_b_ind           => alu_b_ind_s,
-    pc_en               => pc_en_s,
-    ir_en               => ir_en_s,
-    data_en             => data_en_s,
-    write_reg_en        => write_reg_en_s,
-    alu_op              => alu_op_s,
-    decoded_inst        => decoded_instruction_s,
-    flag_z              => flag_z_s,
-    flag_n              => flag_n_s,
-    saida_memoria       => saida_memoria_s,
-    entrada_memoria     => entrada_memoria_s,
-    alu_a_ind           => alu_a_ind_s,
-    mem_write_sel       => mem_write_sel_s
+   clk                 => clk,                    
+   rst_n               => rst_n,                  
+   decoded_inst        => decoded_inst_s,         
+   flag_zero           => flag_zero_s,            
+   flag_neg            => flag_neg_s,             
+   flag_overflow       => flag_overflow_s,        
+   flag_sig_overflow   => flag_sig_overflow_s,    
+   data_in             => data_in_s,              
+   data_out            => data_out_s,             
+   adress_pc           => adress_pc_s,            
+   ir_enable           => ir_enable_s,            
+   pc_enable           => pc_enable_s,            
+   load_mux            => load_mux_s,             
+   adress_mux          => adress_mux_s,           
+   new_pc_sel          => new_pc_sel_s,           
+   branch_mux          => branch_mux_s,           
+   flags_enable        => flags_enable_s,         
+   write_reg_en        => write_reg_en_s         
   );
   
 memory_i : memory
   port map(
     clk                 => clk,
     rst_n               => rst_n,    
-    endereco_memoria    => adress_pc_s,
-    escrita             => write_mem_en_s,
-    saida_memoria       => saida_memoria_s,
-    entrada_memoria     => entrada_memoria_s
+    adress_pc           => adress_pc_s,
+    escrita             => escrita_s,
+    data_in             => data_in_s,
+    data_out            => data_out_s
   );
  
 end rtl;

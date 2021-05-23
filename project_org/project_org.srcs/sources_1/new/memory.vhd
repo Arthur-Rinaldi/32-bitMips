@@ -17,9 +17,9 @@ entity memory is
         clk                 : in  std_logic;
         escrita             : in  std_logic;
         rst_n               : in  std_logic;        
-        entrada_memoria     : in  std_logic_vector(15 downto 0);
-        endereco_memoria    : in  std_logic_vector(8  downto 0);
-        saida_memoria       : out std_logic_vector(15 downto 0)
+        data_out            : in  std_logic_vector(15 downto 0); --Entrada da memoria
+        adress_pc           : in  std_logic_vector(8  downto 0);
+        data_in             : out std_logic_vector(15 downto 0)  --Saida da memoria
         );
         
 end memory;
@@ -554,10 +554,10 @@ begin
 	else
 	    -- read from memory
 		if((escrita = '0'))then 
-				saida_memoria(15 downto 0) <= mem(to_integer(unsigned(endereco_memoria)));
+				data_in(15 downto 0) <= mem(to_integer(unsigned(adress_pc)));
 		-- write in memory		
 		elsif ((escrita = '1')) then 		
-			mem(to_integer(unsigned(endereco_memoria))) <= entrada_memoria(15 downto 0);
+			mem(to_integer(unsigned(adress_pc))) <= data_out(15 downto 0);
 		end if;
 	end if;		
 

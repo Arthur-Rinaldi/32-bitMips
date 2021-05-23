@@ -16,70 +16,78 @@ package mito_pkg is
   
   component data_path
 	Port (
-		clk                 : in  std_logic;
-		rst_n               : in  std_logic;
-		adress_sel          : in  std_logic;
-		jmp_sel             : in  std_logic;
-		alu_mem_sel         : in  std_logic;
-		alu_b_ind           : in  std_logic;
-		pc_en               : in  std_logic;
-		ir_en               : in  std_logic;
-		data_en             : in  std_logic;
-		write_reg_en        : in  std_logic;
-		alu_op              : in  std_logic_vector (5 downto 0);
-		decoded_inst        : out decoded_instruction_type;
-		adress_pc           : out std_logic_vector (8 downto 0);
-		flag_z              : out std_logic;
-		flag_n              : out std_logic;
-		mem_write_sel       : in  std_logic;
-		alu_a_ind           : in  std_logic;
-		saida_memoria       : in  std_logic_vector (31 downto 0);   
-		entrada_memoria     : out std_logic_vector (31 downto 0) 
+		-- Entradas do datapath
+    clk                 : in  std_logic;
+    rst_n               : in  std_logic;
+    -- Registradores
+    ir_enable           : in  std_logic;    -- Permite alterar RI
+    pc_enable           : in  std_logic;    -- Permite alterar o PC
+    flags_enable        : in  std_logic;    -- Permite alterar as flags
+    write_reg_en        : in  std_logic;    -- Permite escrita no banco de registradores
+    -- Multiplexadores
+    load_mux            : in  std_logic;
+    adress_mux          : in  std_logic;
+    new_pc_sel          : in  std_logic;    -- Seletor da entrada de PC, desvio ou soma um
+    branch_mux          : in  std_logic;
+    -- Saidas do datapath
+    decoded_inst        : out decoded_instruction_type;   -- O sinal da instrução que vai para a maquina de estados
+    flag_zero           : out std_logic;
+    flag_neg            : out std_logic;
+    flag_overflow       : out std_logic;
+    flag_sig_overflow   : out std_logic;
+    -- Saida e entrada da memoria
+    adress_pc           : out std_logic_vector (8 downto 0);
+    data_in             : in  std_logic_vector (15 downto 0);       
+    data_out            : out std_logic_vector (15 downto 0) 
 	);
   end component;
 
   component control_unit
     Port ( 
-		clk                 : in  std_logic;
-		rst_n               : in  std_logic;
-		adress_sel          : out std_logic;
-		alu_b_ind           : out std_logic;
-		pc_en               : out std_logic;
-		ir_en               : out std_logic;
-		data_en             : out std_logic;
-		write_reg_en        : out std_logic;
-		jmp_sel             : out std_logic;
-		alu_mem_sel         : out std_logic;
-		write_mem_en        : out std_logic;
-		decoded_inst        : in  decoded_instruction_type;
-		mem_write_sel       : out std_logic; 
-		alu_op              : out std_logic_vector (5 downto 0);
-		flag_z              : in  std_logic;
-		alu_a_ind           : out std_logic;
-		flag_n              : in  std_logic
+		-- Entradas do controle
+        clk                 : in  std_logic;
+        rst_n               : in  std_logic;
+        flag_zero           : in  std_logic;
+        flag_neg            : in std_logic;
+        flag_overflow       : in std_logic;
+        flag_sig_overflow   : in std_logic;
+        decoded_inst        : in decoded_instruction_type;
+        -- Saidas do controle
+        --Registradores
+        ir_enable           : out  std_logic;    -- Permite alterar RI                                
+        pc_enable           : out  std_logic;    -- Permite alterar o PC                              
+        flags_enable        : out  std_logic;    -- Permite alterar as flags                          
+        write_reg_en        : out  std_logic;    -- Permite escrita no banco de registradores         
+        -- Multiplexadores
+        load_mux            : out  std_logic;
+        adress_mux          : out  std_logic;
+        new_pc_sel          : out  std_logic;    -- Seletor da entrada de PC, desvio ou soma um
+        branch_mux          : out  std_logic;
+        halt_signal         : out std_logic;
+        -- Controle da memoria
+        escrita             : out  std_logic
 	);
   end component;
   
   component memory is
 		port(        
-          clk               : in  std_logic;
-          saida_memoria     : out std_logic_vector (15 downto 0);
-          entrada_memoria   : in  std_logic_vector (15 downto 0);
-          escrita           : in  std_logic;
-          endereco_memoria  : in  std_logic_vector (8  downto 0);
-          rst_n             : in  std_logic
-		;
-          
-  end component;
+        clk                 : in  std_logic;
+        escrita             : in  std_logic;
+        rst_n               : in  std_logic;        
+        data_out            : in  std_logic_vector(15 downto 0); --Entrada da memoria
+        adress_pc           : in  std_logic_vector(8  downto 0);
+        data_in             : out std_logic_vector(15 downto 0)  --Saida da memoria
+		 );
+   end component;
 
   component mito
   port (
     rst_n        			: in  std_logic;
     clk          			: in  std_logic;
     adress_pc    			: in  std_logic_vector (8  downto 0);
-    saida_memoria 			: in  std_logic_vector (31 downto 0);  
-    entrada_memoria 		: out std_logic_vector (31 downto 0); 
-    write_enable 			: out std_logic
+    data_in 			    : in  std_logic_vector (15 downto 0);  
+    data_out 		        : out std_logic_vector (15 downto 0)
+    --write_enable 			: out std_logic
   );
   end component;
   
@@ -87,8 +95,8 @@ package mito_pkg is
   port (
        signal clk 				: in  std_logic := '0';
        signal reset 			: in  std_logic;
-       signal saida_memoria 	: in  std_logic_vector (31 downto 0);
-       signal entrada_memoriao 	: out std_logic_vector (31 downto 0)
+       signal data_in 	        : in  std_logic_vector (15 downto 0);
+       signal data_out       	: out std_logic_vector (15 downto 0)
   ); 
   
   end component;   
