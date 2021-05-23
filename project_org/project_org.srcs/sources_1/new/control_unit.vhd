@@ -31,6 +31,7 @@ entity control_unit is
         adress_mux          : out  std_logic;
         new_pc_sel          : out  std_logic;    -- Seletor da entrada de PC, desvio ou soma um
         branch_mux          : out  std_logic;
+        halt_signal         : out std_logic;
         -- Controle da memoria
         escrita             : out  std_logic
         );
@@ -39,7 +40,7 @@ end control_unit;
 
 architecture rtl of control_unit is
 
-        type state_type is (FETCH,DECODE,NEXT1,ULA_1,ULA_2,STORE,LOAD,BRANCH,BZERO,BNEG,JUMP,NOP,HALT);
+        type state_type is (FETCH,DECODE,NEXT1,ULA_1,STORE,STORE2,LOAD,LOAD2,BRANCH,BZERO,BNEG,JUMP,NOP,HALT);
         signal state : state_type;
         
 begin
@@ -89,27 +90,57 @@ begin
                     state <= HALT;
                 end if; 
             when LOAD=>
-            
+                adress_mux    <= '1'; 
+                load_mux      <= '1'; 
+                state<=LOAD2;      
             when STORE=>
-               
+               adress_mux    <= '1'; 
+               state<=STORE2;
+            when LOAD2=>
+                adress_mux    <= '1';
+                load_mux      <= '1';
+                write_reg_en  <= '1';             
+            when STORE2=>
+               adress_mux    <= '1'; 
+               escrita<= '1';
+               state<=NEXT1;
             when ULA_1=>
-            
-            when ULA_2=>
-            
+                load_mux      <= '0';
+                write_reg_en  <= '1';
+                flags_enable  <= '1';
+                state<=NEXT1;
             when JUMP =>
-
+                branch_mux    <= '1';
+                new_pc_sel    <= '1';
+                pc_enable     <= '1';
             when BRANCH=>
-
+                branch_mux    <= '0';
+                new_pc_sel    <= '1';
+                pc_enable     <= '1';
             when BZERO=>
-
+                if flag_zero = '1' then
+                    branch_mux    <= '0';
+                    new_pc_sel    <= '1';
+                    pc_enable     <= '1';
+                end if;
+                state <= NEXT1;
             when BNEG=>
-            
-            when NEXT1=>
-            
+                if flag_neg = '1' then
+                    branch_mux    <= '0';
+                    new_pc_sel    <= '1';
+                    pc_enable     <= '1';
+                end if;
+                state <= NEXT1;
+            when NEXT1=>            -- 
+                ir_enable <= '1';
+                flags_enable  <= '0';
+                escrita <= '0';
+                write_reg_en  <= '0';     
+                state <= FETCH;
             when NOP=>
-            
+                state <= NEXT1;
             when HALT=>
-            
+                halt_signal <= '1';
             when others=>
                  state <= HALT;     
            end case;

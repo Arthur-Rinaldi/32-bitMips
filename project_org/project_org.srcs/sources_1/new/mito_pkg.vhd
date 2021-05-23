@@ -63,8 +63,8 @@ package mito_pkg is
   component memory is
 		port(        
           clk               : in  std_logic;
-          saida_memoria     : out std_logic_vector (31 downto 0);
-          entrada_memoria   : in  std_logic_vector (31 downto 0);
+          saida_memoria     : out std_logic_vector (15 downto 0);
+          entrada_memoria   : in  std_logic_vector (15 downto 0);
           escrita           : in  std_logic;
           endereco_memoria  : in  std_logic_vector (8  downto 0);
           rst_n             : in  std_logic
