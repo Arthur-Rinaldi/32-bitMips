@@ -31,6 +31,7 @@ architecture Behavioral of testebench is
         signal reset_s          : std_logic;
         signal data_in_s        : std_logic_vector (15 downto 0);
         signal data_out_s       : std_logic_vector (15 downto 0);
+        constant clk_period  : time                := 10 ns;
         
     begin
     
@@ -42,11 +43,17 @@ architecture Behavioral of testebench is
         data_out            => data_out_s
       );
 
-    -- clock generator - 100MHZ
-    clk_s 	<= not clk_s after 5 ns;
+  -- Clock process definitions
+    clk_100Mhz : process
+  begin
+       clk_s <= '0';
+       wait for clk_period/2;
+       clk_s <= '1';
+       wait for clk_period/2;
+    end process;
     
     -- reset signal
     reset_s		<= '1' after 2 ns,
-		   '0' after 4 ns;	
+		   '0' after 8 ns;	
 
 end Behavioral;

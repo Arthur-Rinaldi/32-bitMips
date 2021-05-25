@@ -45,12 +45,18 @@ architecture rtl of control_unit is
         
 begin
 
-        process(clk, rst_n)
+    MAQUINA_DE_ESTADO:    process(clk, rst_n)
     begin
     if rst_n = '0' and rising_edge(clk) then
         ir_enable <= '1';
         state <= FETCH;
+        
+        
+        
     elsif(rising_edge(clk)) then
+    
+    
+    
         ir_enable     <= '0';
         pc_enable     <= '0';
         flags_enable  <= '0';
@@ -147,6 +153,6 @@ begin
      end if;
 
 
-end process;
+end process MAQUINA_DE_ESTADO;
 
 end rtl;

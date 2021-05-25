@@ -74,7 +74,7 @@ signal reg14               : std_logic_vector (15 downto 0);
 signal reg15               : std_logic_vector (15 downto 0);
 
 -- Sinais da ULA  
-signal ula_out      : STD_LOGIC_VECTOR (16 downto 0);
+signal ula_out      : STD_LOGIC_VECTOR (15 downto 0);
 
 -- Sinais do banc de registradores
 signal bus_a        : STD_LOGIC_VECTOR (15 downto 0);
