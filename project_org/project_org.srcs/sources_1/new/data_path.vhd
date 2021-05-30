@@ -48,7 +48,7 @@ signal pc_in                : std_logic_vector (8  downto 0);   -- Entrada do PC
 -- Sinais que saem do decoder
 signal ULA_OP               : std_logic_vector (2  downto 0);   -- Seta a operação da ula
 signal adress               : std_logic_vector (8  downto 0);   -- Endereço de jump, load e store
-signal branch_adress        : std_logic_vector (8  downto 0);   -- Endereço de Branch
+signal store_adress         : std_logic_vector (8  downto 0);   -- Endereço de store e load
 signal REG_A                : std_logic_vector (3  downto 0);   -- 
 signal REG_B                : std_logic_vector (3  downto 0);   --
 signal REG_DEST             : std_logic_vector (3  downto 0);   -- Seta o registrador destino
@@ -78,7 +78,7 @@ signal ula_out      : STD_LOGIC_VECTOR (15 downto 0);
 
 -- Sinais do banc de registradores
 signal bus_a        : STD_LOGIC_VECTOR (15 downto 0);
-signal bus_a_in        : STD_LOGIC_VECTOR (15 downto 0);
+signal bus_a_in     : STD_LOGIC_VECTOR (15 downto 0);
 signal bus_b        : STD_LOGIC_VECTOR (15 downto 0);
 signal bus_c        : STD_LOGIC_VECTOR (15 downto 0);
 
@@ -92,7 +92,7 @@ begin
     
     PC : process (clk)
     begin
-    if (rst_n = '0' AND rising_edge(clk)) then
+    if (rst_n = '1' AND rising_edge(clk)) then
         pc_out <= "000000000";
     elsif (pc_enable = '1' AND rising_edge(clk)) then
         pc_out <= pc_in;
@@ -140,7 +140,7 @@ begin
                      when others => reg15 <= bus_a_in;
                  end case;   
             else
-                if (rst_n = '0') then
+                if (rst_n = '1') then
                     reg0 <= "0000000000000000";
                     reg1 <= "0000000000000000";
                     reg2 <= "0000000000000000";
@@ -198,7 +198,7 @@ begin
     reg14 when REG_A = "1110" else
     reg15;
     
-    bus_c_wire : 
+    bus_c_wire :
     bus_c <= reg0 when REG_B = "0000" else
     reg1  when REG_B = "0001" else
     reg2  when REG_B = "0010" else
@@ -216,6 +216,7 @@ begin
     reg14 when REG_B = "1110" else
     reg15;
 
+    
     ULA : process(bus_b, bus_c, ULA_OP)
         begin
         overflow <= '0';
@@ -270,28 +271,19 @@ begin
     end if;
     end process MUX_LOAD;
     
-    MUX_MEM_ADRESS : process (adress_mux,pc_out,adress) --Multiplexador do endereço de memoria
+    MUX_MEM_ADRESS : process (adress_mux,pc_out,store_adress) --Multiplexador do endereço de memoria
     begin
     if (adress_mux = '1') then
-        adress_pc <= adress; -- Recebe o endereço escrito na instrução
+        adress_pc <= store_adress; -- Recebe o endereço escrito na instrução
     else
         adress_pc <= pc_out; -- Recebe o valor de PC
     end if;
     end process MUX_MEM_ADRESS;
     
-    MUX_JUMP_BRANCH : process (branch_mux,branch_adress,adress) --Multiplexador do endereço de memoria
-    begin
-    if (adress_mux = '1') then
-        pc_desvio <= adress; -- saida do mux com valor do jump
-    else
-        pc_desvio <= branch_adress; -- Saida do mux com valor do branch
-    end if;
-    end process MUX_JUMP_BRANCH;
-    
     PC_ADD : process (pc_desvio,pc_out,new_pc_sel ) --Multiplexador da entrada do pc
     begin
     if (new_pc_sel = '1') then     -- Nesse caso ocorre o desvio
-        pc_in <= pc_desvio;
+        pc_in <= adress;
     else
         pc_in <= pc_out + 1; -- Não ocorre desvio
     end if;
@@ -304,8 +296,8 @@ begin
         REG_DEST      <= instruction(11 downto 8);
         ULA_OP        <= instruction(14 downto 12);
         adress        <= instruction(8 downto 0);
-        branch_adress(7 downto 0) <= instruction(7 downto 0);
-        branch_adress(8 downto 8) <= instruction(12 downto 12);
+        store_adress(8) <= instruction(12);
+        store_adress(7 downto 0) <= instruction(7 downto 0);
         if instruction(15 downto 15) = "1" then                 -- Operação de ULA
             case instruction(14 downto 12) is
             when "000"=>
@@ -316,7 +308,7 @@ begin
                 decoded_inst <= I_AND;
             when "011"=>
                 decoded_inst <= I_OR;
-            when  others=> 
+            when  others=>                  -- AQUI PODE POR MAIS FUNÇÕES DE ULA
                 decoded_inst <= I_NOP;
             end case;
          else
@@ -341,11 +333,13 @@ begin
                         when others =>                  -- Aqui pode ser adicionado novos tipos de branch
                         decoded_inst <= I_BRANCH;
                     end case;
-                when "10"=>
-                    decoded_inst <= I_JMP;
-                when  others=> 
-                    decoded_inst <= I_HALT;
-                end case;
+                 when "10"=>
+                     decoded_inst <= I_JMP;
+                 when  "11"=> 
+                     decoded_inst <= I_HALT;
+                 when others =>
+                     decoded_inst <= I_NOP;
+                 end case;
             end if;
          end if; 
     end process DECODER;

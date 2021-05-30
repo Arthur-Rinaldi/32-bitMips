@@ -40,23 +40,17 @@ end control_unit;
 
 architecture rtl of control_unit is
 
-        type state_type is (FETCH,DECODE,NEXT1,ULA_1,STORE,STORE2,LOAD,LOAD2,BRANCH,BZERO,BNEG,JUMP,NOP,HALT);
+        type state_type is (FETCH,DECODE,NEXT1,NEXT2,ULA_1,STORE,STORE2,LOAD,LOAD2,BRANCH,BZERO,BNEG,JUMP,NOP,HALT);
         signal state : state_type;
         
 begin
 
-    MAQUINA_DE_ESTADO:    process(clk, rst_n)
+    MAQUINA_DE_ESTADO:    process(clk, rst_n,state)
     begin
-    if rst_n = '0' and rising_edge(clk) then
+    if rst_n = '1' and rising_edge(clk) then
         ir_enable <= '1';
         state <= FETCH;
-        
-        
-        
     elsif(rising_edge(clk)) then
-    
-    
-    
         ir_enable     <= '0';
         pc_enable     <= '0';
         flags_enable  <= '0';
@@ -73,6 +67,7 @@ begin
                 if decoded_inst = I_LOAD then
                     state <= LOAD;
                 elsif decoded_inst = I_STORE then
+                    escrita       <= '1';
                     state <= STORE;
                 elsif decoded_inst = I_ADD then
                     state <= ULA_1;
@@ -96,55 +91,64 @@ begin
                     state <= HALT;
                 end if; 
             when LOAD=>
-                adress_mux    <= '1'; 
+                write_reg_en  <= '1';
                 load_mux      <= '1'; 
+                adress_mux    <= '1';
                 state<=LOAD2;      
+            when LOAD2=>
+                load_mux      <= '1'; 
+                pc_enable     <= '1';
+                adress_mux    <= '1';
+                state<=NEXT1;  
             when STORE=>
                adress_mux    <= '1'; 
-               state<=STORE2;
-            when LOAD2=>
-                adress_mux    <= '1';
-                load_mux      <= '1';
-                write_reg_en  <= '1';             
+               state<=STORE2;       
             when STORE2=>
                adress_mux    <= '1'; 
                escrita<= '1';
+               pc_enable     <= '1';
                state<=NEXT1;
             when ULA_1=>
                 load_mux      <= '0';
                 write_reg_en  <= '1';
                 flags_enable  <= '1';
+                pc_enable     <= '1';
                 state<=NEXT1;
             when JUMP =>
                 branch_mux    <= '1';
                 new_pc_sel    <= '1';
                 pc_enable     <= '1';
+                state <= NEXT1;
             when BRANCH=>
                 branch_mux    <= '0';
                 new_pc_sel    <= '1';
                 pc_enable     <= '1';
+                state <= NEXT1;
             when BZERO=>
                 if flag_zero = '1' then
-                    branch_mux    <= '0';
+                    branch_mux    <= '1';
                     new_pc_sel    <= '1';
-                    pc_enable     <= '1';
                 end if;
+                pc_enable     <= '1';
                 state <= NEXT1;
             when BNEG=>
                 if flag_neg = '1' then
-                    branch_mux    <= '0';
+                    branch_mux    <= '1';
                     new_pc_sel    <= '1';
-                    pc_enable     <= '1';
                 end if;
+                pc_enable     <= '1';
                 state <= NEXT1;
             when NEXT1=>            -- 
                 ir_enable <= '1';
                 flags_enable  <= '0';
                 escrita <= '0';
-                write_reg_en  <= '0';     
+                write_reg_en  <= '0';   
+                state <= NEXT2;
+            when NEXT2=>            --  
                 state <= FETCH;
             when NOP=>
-                state <= NEXT1;
+                ir_enable <= '1';
+                state <= FETCH;
             when HALT=>
                 halt_signal <= '1';
             when others=>
