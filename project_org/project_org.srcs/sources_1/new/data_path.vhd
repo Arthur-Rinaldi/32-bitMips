@@ -354,6 +354,59 @@ begin
 	         end if;  
 	         ula_out <= multiplo;              
 	         ula_out(15) <= bus_b(15) xor bus_c(15);
+	    elsif(ULA_OP = "101")  then -- AO QUADRADO 
+	       if (bus_c(15)='1') then
+                nova_base_c <= (not bus_c)+1;
+             else
+                nova_base_c <= bus_c;
+             end if; 
+             if (nova_base_c(0) = '1') then
+	             mult_0 <= nova_base_c;
+	         end if;     
+	         if (nova_base_c(1) = '1') then
+	             mult_1(15 downto 1) <= nova_base_c(14 downto 0);
+	         end if;  
+	         if (nova_base_c(2) = '1') then
+	             mult_2(15 downto 2) <= nova_base_c(13 downto 0);
+	         end if;  
+	         if (nova_base_c(3) = '1') then
+	             mult_3(15 downto 3)<= nova_base_c(12 downto 0);
+	         end if;  
+	         if (nova_base_c(4) = '1') then
+	             mult_4(15 downto 4) <= nova_base_c(11 downto 0);
+	         end if;  
+	         if (nova_base_c(5) = '1') then
+	             mult_5(15 downto 5) <= nova_base_c(10 downto 0);
+	         end if;  
+	         if (nova_base_c(6) = '1') then
+	             mult_6(15 downto 6) <= nova_base_c(9 downto 0);
+	         end if;  
+	         if (nova_base_c(7) = '1') then
+	             mult_7(15 downto 7) <= nova_base_c(8 downto 0);
+	         end if;  
+	         if (nova_base_c(8) = '1') then
+	             mult_8(15 downto 8) <= nova_base_c(7 downto 0);
+	         end if;  
+	         if (nova_base_c(9) = '1') then
+	             mult_9(15 downto 9) <= nova_base_c(6 downto 0);
+	         end if;  
+	         if (nova_base_c(10) = '1') then
+	             mult_10(15 downto 10) <= nova_base_c(5 downto 0);
+	         end if;  
+	         if (nova_base_c(11) = '1') then
+	             mult_11(15 downto 11) <= nova_base_c(4 downto 0);
+	         end if;  
+	         if (nova_base_c(12) = '1') then
+	             mult_12(15 downto 12) <= nova_base_c(3 downto 0);
+	         end if;  
+	         if (nova_base_c(13) = '1') then
+	             mult_13(15 downto 13) <= nova_base_c(2 downto 0);
+	         end if;  
+	         if (nova_base_c(14) = '1') then
+	             mult_14(15 downto 14) <= nova_base_c(1 downto 0);
+	         end if;
+	         ula_out <= multiplo;
+	         ula_out(15) <= '0';
         end if;                                                             -- AQUI PODE SER POSTO MAIS OPERAÇÕES PARA A ULA
     end process ULA;
     
@@ -408,6 +461,8 @@ begin
                 decoded_inst <= I_OR;
             when "100"=>
                 decoded_inst <= I_MULT;
+            when "101"=>
+                decoded_inst <= I_SQR;
             when  others=>                  -- AQUI PODE POR MAIS FUNÇÕES DE ULA
                 decoded_inst <= I_NOP;
             end case;

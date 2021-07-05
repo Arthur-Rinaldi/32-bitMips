@@ -89,6 +89,8 @@ begin
                     state <= NOP;
                 elsif decoded_inst = I_MULT then
                     state <= ULA_1;
+                elsif decoded_inst = I_SQR then
+                    state <= ULA_1;
                 else -- HALT
                     state <= HALT;
                 end if; 
