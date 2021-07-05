@@ -73,7 +73,7 @@ data_path_i : data_path
    data_in             => data_in_s,              
    data_out            => data_out_s,             
    adress_pc           => adress_pc_s,            
-   ir_enable           => ir_enable_s,            
+   ir_enable           => ir_enable_s,   
    pc_enable           => pc_enable_s,            
    load_mux            => load_mux_s,             
    adress_mux          => adress_mux_s,           

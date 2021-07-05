@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="111501828fs"></ZoomEndTime>
-      <Cursor1Time time="535000000fs"></Cursor1Time>
+      <ZoomStartTime time="440614999fs"></ZoomStartTime>
+      <ZoomEndTime time="634183990fs"></ZoomEndTime>
+      <Cursor1Time time="541687000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="175"></NameColumnWidth>
-      <ValueColumnWidth column_width="75"></ValueColumnWidth>
+      <NameColumnWidth column_width="172"></NameColumnWidth>
+      <ValueColumnWidth column_width="58"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="12" />
+   <WVObjectSize size="18" />
    <wvobject fp_name="/testebench/reset_s" type="logic">
       <obj_property name="ElementShortName">reset_s</obj_property>
       <obj_property name="ObjectShortName">reset_s</obj_property>
@@ -52,6 +52,10 @@
       <obj_property name="ElementShortName">reg3[15:0]</obj_property>
       <obj_property name="ObjectShortName">reg3[15:0]</obj_property>
    </wvobject>
+   <wvobject fp_name="/testebench/miTo_i/data_path_i/reg15" type="array">
+      <obj_property name="ElementShortName">reg15[15:0]</obj_property>
+      <obj_property name="ObjectShortName">reg15[15:0]</obj_property>
+   </wvobject>
    <wvobject fp_name="/testebench/clk_s" type="logic">
       <obj_property name="ElementShortName">clk_s</obj_property>
       <obj_property name="ObjectShortName">clk_s</obj_property>
@@ -67,5 +71,25 @@
    <wvobject fp_name="/testebench/miTo_i/memory_i/mem[511]" type="array">
       <obj_property name="ElementShortName">[511][15:0]</obj_property>
       <obj_property name="ObjectShortName">[511][15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testebench/miTo_i/data_path_i/bus_a_in" type="array">
+      <obj_property name="ElementShortName">bus_a_in[15:0]</obj_property>
+      <obj_property name="ObjectShortName">bus_a_in[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testebench/miTo_i/data_path_i/bus_b" type="array">
+      <obj_property name="ElementShortName">bus_b[15:0]</obj_property>
+      <obj_property name="ObjectShortName">bus_b[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testebench/miTo_i/data_path_i/bus_c" type="array">
+      <obj_property name="ElementShortName">bus_c[15:0]</obj_property>
+      <obj_property name="ObjectShortName">bus_c[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testebench/miTo_i/data_path_i/multiplo" type="array">
+      <obj_property name="ElementShortName">multiplo[15:0]</obj_property>
+      <obj_property name="ObjectShortName">multiplo[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/testebench/miTo_i/data_path_i/val_left" type="array">
+      <obj_property name="ElementShortName">val_left[15:0]</obj_property>
+      <obj_property name="ObjectShortName">val_left[15:0]</obj_property>
    </wvobject>
 </wave_config>

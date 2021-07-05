@@ -72,6 +72,8 @@ signal reg12               : std_logic_vector (15 downto 0);
 signal reg13               : std_logic_vector (15 downto 0);
 signal reg14               : std_logic_vector (15 downto 0);
 signal reg15               : std_logic_vector (15 downto 0);
+signal regx                : std_logic_vector (15 downto 0);
+signal regt                : std_logic_vector (15 downto 0);
 
 -- Sinais da ULA  
 signal ula_out      : STD_LOGIC_VECTOR (15 downto 0);
@@ -87,6 +89,26 @@ signal zero         : std_logic;
 signal neg          : std_logic;
 signal overflow     : std_logic;
 signal sig_overflow : std_logic;
+
+-- SOMA SEQUENCIAL
+signal nova_base_b  : STD_LOGIC_VECTOR (15 downto 0);
+signal nova_base_c  : STD_LOGIC_VECTOR (15 downto 0);
+signal multiplo     : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_0       : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_1       : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_2       : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_3       : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_4       : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_5       : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_6       : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_7       : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_8       : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_9       : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_10      : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_11      : STD_LOGIC_VECTOR (15 downto 0);  
+signal mult_12      : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_13      : STD_LOGIC_VECTOR (15 downto 0);
+signal mult_14      : STD_LOGIC_VECTOR (15 downto 0);
   
 begin
     
@@ -215,12 +237,27 @@ begin
     reg13 when REG_B = "1101" else
     reg14 when REG_B = "1110" else
     reg15;
-
-    
-    ULA : process(bus_b, bus_c, ULA_OP)
+        
+    ULA : process(bus_b, bus_c, ULA_OP,multiplo,nova_base_b,nova_base_c)
         begin
         overflow <= '0';
         sig_overflow <= '0';
+        --multiplo <= "0000000000000000";
+        mult_0   <= "0000000000000000";
+        mult_1   <= "0000000000000000";
+        mult_2   <= "0000000000000000";
+        mult_3   <= "0000000000000000";
+        mult_4   <= "0000000000000000";
+        mult_5   <= "0000000000000000";
+        mult_6   <= "0000000000000000";
+        mult_7   <= "0000000000000000";
+        mult_8   <= "0000000000000000";
+        mult_9   <= "0000000000000000";
+        mult_10  <= "0000000000000000";
+        mult_11  <= "0000000000000000";
+        mult_12  <= "0000000000000000";
+        mult_13  <= "0000000000000000";
+        mult_14  <= "0000000000000000";
         if  (ula_out = "0000000000000000") then
         zero <= '1';
         else
@@ -257,11 +294,72 @@ begin
             end if;
         elsif(ULA_OP = "010") then --AND   
             ula_out <= bus_b AND bus_c;
-        else -- OR
-            ula_out <= bus_b OR bus_c;      -- AQUI PODE SER POSTO MAIS OPERAÇÕES PARA A ULA
-        end if;
+        elsif(ULA_OP = "011") then --OR   
+            ula_out <= bus_b OR bus_c;
+        elsif(ULA_OP = "100")  then -- MULTIPLICAÇÃO  
+             if (bus_c(15)='1') then
+                nova_base_c <= (not bus_c)+1;
+             else
+                nova_base_c <= bus_c;
+             end if;
+             if (bus_b(15)='1') then
+                nova_base_b <= (not bus_b)+1;
+             else
+                nova_base_b <= bus_b;
+             end if;
+	         if (nova_base_b(0) = '1') then
+	             mult_0 <= nova_base_c;
+	         end if;     
+	         if (nova_base_b(1) = '1') then
+	             mult_1(15 downto 1) <= nova_base_c(14 downto 0);
+	         end if;  
+	         if (nova_base_b(2) = '1') then
+	             mult_2(15 downto 2) <= nova_base_c(13 downto 0);
+	         end if;  
+	         if (nova_base_b(3) = '1') then
+	             mult_3(15 downto 3)<= nova_base_c(12 downto 0);
+	         end if;  
+	         if (nova_base_b(4) = '1') then
+	             mult_4(15 downto 4) <= nova_base_c(11 downto 0);
+	         end if;  
+	         if (nova_base_b(5) = '1') then
+	             mult_5(15 downto 5) <= nova_base_c(10 downto 0);
+	         end if;  
+	         if (nova_base_b(6) = '1') then
+	             mult_6(15 downto 6) <= nova_base_c(9 downto 0);
+	         end if;  
+	         if (nova_base_b(7) = '1') then
+	             mult_7(15 downto 7) <= nova_base_c(8 downto 0);
+	         end if;  
+	         if (nova_base_b(8) = '1') then
+	             mult_8(15 downto 8) <= nova_base_c(7 downto 0);
+	         end if;  
+	         if (nova_base_b(9) = '1') then
+	             mult_9(15 downto 9) <= nova_base_c(6 downto 0);
+	         end if;  
+	         if (nova_base_b(10) = '1') then
+	             mult_10(15 downto 10) <= nova_base_c(5 downto 0);
+	         end if;  
+	         if (nova_base_b(11) = '1') then
+	             mult_11(15 downto 11) <= nova_base_c(4 downto 0);
+	         end if;  
+	         if (nova_base_b(12) = '1') then
+	             mult_12(15 downto 12) <= nova_base_c(3 downto 0);
+	         end if;  
+	         if (nova_base_b(13) = '1') then
+	             mult_13(15 downto 13) <= nova_base_c(2 downto 0);
+	         end if;  
+	         if (nova_base_b(14) = '1') then
+	             mult_14(15 downto 14) <= nova_base_c(1 downto 0);
+	         end if;  
+	         ula_out <= multiplo;              
+	         ula_out(15) <= bus_b(15) xor bus_c(15);
+        end if;                                                             -- AQUI PODE SER POSTO MAIS OPERAÇÕES PARA A ULA
     end process ULA;
-
+    
+    Saida_Multiplo:
+    multiplo<= mult_0+mult_1+mult_2+mult_3+mult_4+mult_5+mult_6+mult_7+mult_8+mult_9+mult_10+mult_11+mult_12+mult_13+mult_14;
+    
     MUX_LOAD : process (load_mux,data_in,ula_out) --Multiplexador da função LOAD
     begin
     if (load_mux = '1') then
@@ -308,6 +406,8 @@ begin
                 decoded_inst <= I_AND;
             when "011"=>
                 decoded_inst <= I_OR;
+            when "100"=>
+                decoded_inst <= I_MULT;
             when  others=>                  -- AQUI PODE POR MAIS FUNÇÕES DE ULA
                 decoded_inst <= I_NOP;
             end case;

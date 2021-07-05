@@ -22,7 +22,7 @@ entity control_unit is
         decoded_inst        : in decoded_instruction_type;
         -- Saidas do controle
         --Registradores
-        ir_enable           : out  std_logic;    -- Permite alterar RI                                
+        ir_enable           : out  std_logic;    -- Permite alterar RI                                     
         pc_enable           : out  std_logic;    -- Permite alterar o PC                              
         flags_enable        : out  std_logic;    -- Permite alterar as flags                          
         write_reg_en        : out  std_logic;    -- Permite escrita no banco de registradores         
@@ -87,6 +87,8 @@ begin
                     state <= JUMP;
                 elsif decoded_inst = I_NOP then
                     state <= NOP;
+                elsif decoded_inst = I_MULT then
+                    state <= ULA_1;
                 else -- HALT
                     state <= HALT;
                 end if; 
